@@ -29,19 +29,6 @@ The simplest way to use the package:
 import torch
 import orientation_uv_rppg as ouv
 
-# Load your video frames (replace with your video loading code)
-frames = torch.randn(100, 480, 640, 3)  # 100 frames, 480x640 resolution, RGB
-
-# Quick processing with default parameters
-processed_frames = ouv.quick_process(frames)
-print(f"Processed {frames.shape} → {processed_frames.shape}")
-```
-
-For more control over the video processing operations:
-```Python
-import torch
-import orientation_uv_rppg as ouv
-
 # Create video processor with custom parameters
 processor = ouv.OrientationMaskedTextureSpaceVideoProcessor(
     min_detection_confidence=0.7,    # Higher confidence threshold
