@@ -10,8 +10,6 @@ class MediaPipeLandmarkDetector:
         min_detection_confidence: float = 0.45,
         min_tracking_confidence: float = 0.45,
     ) -> None:
-        super(MediaPipeLandmarkDetector, self).__init__()
-
         self.min_detection_confidence = min_detection_confidence
         self.min_tracking_confidence = min_tracking_confidence
 

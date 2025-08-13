@@ -1,3 +1,4 @@
+import torch
 from orientation_uv_rppg.utils.landmark_detector import MediaPipeLandmarkDetector
 from orientation_uv_rppg.utils.frame_warp import GPUPiecewiseAffineTransform
 from orientation_uv_rppg.utils.frame_mask import UVAngleMasker
@@ -38,7 +39,18 @@ class OrientationMaskedTextureSpaceVideoProcessor:
         Returns:
             Tensor: Frames of shape [N,output_size,output_size,C]
         """
+        # 
+        assert isinstance(frames_xy, Tensor), f"Provided `frames` must be a `Tensor`."
+        assert len(frames_xy.shape) == 4, f"Provided `frames` must have shape `[N,H,W,C]`."
+        assert frames_xy.dtype == torch.uint8, f"Provided `frames` must be dtype `torch.uint8`."
+
+        # perform landmark detection
         landmarks_xyz = self.detector(frames_xy) # [N,V,3]
+
+        # piecewise affine transformation of frame based on landmarks
         frames_uv = self.warper(frames_xy, landmarks_xyz, output_size=self.output_size) # [N,output_size,output_size,3]
+
+        # orientation-based masking of warped frames
         frames_uv_masked = self.masker(frames_uv, self.detector.landmarks_uv, landmarks_xyz, degree_threshold=self.degree_threshold)
+
         return frames_uv_masked

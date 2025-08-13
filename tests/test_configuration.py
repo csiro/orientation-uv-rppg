@@ -1,7 +1,8 @@
 """
 Pytest configuration and fixtures for orientation-uv-rppg tests.
 """
-
+import shutil
+import pathlib
 import pytest
 import torch
 import numpy as np
@@ -12,15 +13,32 @@ from typing import Tuple, Optional
 @pytest.fixture
 def sample_frames() -> torch.Tensor:
     """Create sample video frames for testing."""
-    # Create sample frames: 10 frames, 480x640 resolution, RGB
-    return torch.randn(10, 480, 640, 3)
+    # Random uint8 frames: 10 frames, 480x640 resolution, RGB
+    return torch.randint(0, 256, (10, 480, 640, 3), dtype=torch.uint8)
 
 
 @pytest.fixture
 def small_sample_frames() -> torch.Tensor:
     """Create small sample video frames for quick testing."""
-    # Create small frames: 5 frames, 64x64 resolution, RGB
-    return torch.randn(5, 64, 64, 3)
+    return torch.randint(0, 256, (5, 64, 64, 3), dtype=torch.uint8)
+
+
+@pytest.fixture
+def performance_frames():
+    """Large batch of frames for performance testing."""
+    return torch.randint(0, 256, (100, 480, 640, 3), dtype=torch.uint8)
+
+
+@pytest.fixture
+def error_frames():
+    """Frames that might cause errors."""
+    return {
+        "empty": torch.empty(0, 64, 64, 3, dtype=torch.uint8),
+        "wrong_dims": torch.randint(0, 256, (10, 64), dtype=torch.uint8),  # Missing dims
+        "wrong_channels": torch.randint(0, 256, (10, 64, 64, 1), dtype=torch.uint8),  # Grayscale
+        "negative": torch.randint(0, 256, (10, 64, 64, 3), dtype=torch.uint8),  # Will still be uint8
+        "large": torch.randint(0, 256, (1, 2000, 2000, 3), dtype=torch.uint8),
+    }
 
 
 @pytest.fixture
@@ -62,7 +80,8 @@ def mock_gpu_warper():
     
     def mock_warp(frames, landmarks, output_size=64):
         batch_size = frames.shape[0]
-        return torch.randn(batch_size, output_size, output_size, 3)
+        return torch.randint(0, 256, (batch_size, output_size, output_size, 3), dtype=torch.uint8)
+
     
     warper.__call__ = Mock(side_effect=mock_warp)
     return warper
@@ -142,33 +161,14 @@ def test_data_dir(tmp_path):
 
 
 @pytest.fixture
-def sample_video_file(test_data_dir, sample_frames):
-    """Create a sample video file for testing (mock)."""
-    video_path = test_data_dir / "sample_video.mp4"
-    # In real implementation, you might save actual video
-    # For now, just create a placeholder
-    video_path.touch()
-    return str(video_path)
-
-
-# Error simulation fixtures
-@pytest.fixture
-def error_frames():
-    """Frames that might cause errors."""
-    return {
-        "empty": torch.empty(0, 64, 64, 3),
-        "wrong_dims": torch.randn(10, 64),  # Missing dimensions
-        "wrong_channels": torch.randn(10, 64, 64, 1),  # Grayscale
-        "negative": torch.randn(10, 64, 64, 3) - 2,  # Negative values
-        "large": torch.randn(1, 2000, 2000, 3),  # Very large frames
-    }
-
-
-# Performance testing fixtures
-@pytest.fixture
-def performance_frames():
-    """Large batch of frames for performance testing."""
-    return torch.randn(100, 480, 640, 3)
+def real_video_file(test_data_dir):
+    import shutil, pathlib
+    asset_path = pathlib.Path(__file__).parent / "assets" / "34d3d5ef-b98f-46e1-b481-2249752423c4.mp4"
+    dst_path = test_data_dir / "face_video.mp4"
+    if not asset_path.exists():
+        pytest.skip("Real video file not available")
+    shutil.copy(asset_path, dst_path)
+    return str(dst_path)
 
 
 @pytest.fixture(scope="session")

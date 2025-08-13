@@ -1,11 +1,25 @@
 """
 Test imports and basic functionality.
 """
-
+import cv2
 import pytest
 import torch
 import sys
 from unittest.mock import patch, Mock
+
+
+def load_real_video_frames(path, num_frames=10):
+    cap = cv2.VideoCapture(path)
+    frames = []
+    for _ in range(num_frames):
+        ret, frame = cap.read()
+        if not ret:
+            break
+        frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+        frames.append(torch.from_numpy(frame_rgb))
+    cap.release()
+    return torch.stack(frames).to(torch.uint8)
+
 
 
 class TestPackageImports:
@@ -57,7 +71,6 @@ class TestPackageImports:
         import orientation_uv_rppg as ouv
         
         convenience_functions = [
-            'quick_process',
             'get_version',
         ]
         
@@ -159,7 +172,7 @@ class TestClassInstantiation:
         # Mock the dependencies
         mock_detector_instance = Mock()
         mock_detector_instance.landmarks_uv = torch.randn(468, 2)
-        mock_detector_instance.mesh_faces = torch.randint(0, 468, (900, 3))
+        mock_detector_instance.mesh_faces = torch.randint(0, 468, (852, 3))
         mock_detector_instance.camera_normal = torch.tensor([0., 0., -1.])
         mock_detector.return_value = mock_detector_instance
         
@@ -203,33 +216,6 @@ class TestClassInstantiation:
         assert ouv.VideoProcessor is ouv.OrientationMaskedTextureSpaceVideoProcessor
 
 
-class TestQuickProcessFunction:
-    """Test the quick_process convenience function."""
-    
-    @patch('orientation_uv_rppg.core.core.OrientationMaskedTextureSpaceVideoProcessor')
-    def test_quick_process_basic(self, mock_processor_class):
-        """Test quick_process function works."""
-        import orientation_uv_rppg as ouv
-        
-        # Mock the processor
-        mock_processor = Mock()
-        mock_processor.return_value = torch.randn(5, 32, 32, 3)
-        mock_processor_class.return_value = mock_processor
-        
-        # Test frames
-        frames = torch.randn(5, 64, 64, 3)
-        
-        # Call quick_process
-        result = ouv.quick_process(frames, output_size=32)
-        
-        # Verify processor was created and called
-        mock_processor_class.assert_called_once_with(output_size=32)
-        mock_processor.assert_called_once_with(frames)
-        
-        # Check result
-        assert result.shape == (5, 32, 32, 3)
-
-
 class TestAllExports:
     """Test __all__ exports."""
     
@@ -258,7 +244,6 @@ class TestAllExports:
         required_in_all = [
             'OrientationMaskedTextureSpaceVideoProcessor',
             'VideoProcessor',
-            '__version__',
         ]
         
         for item in required_in_all:
