@@ -62,3 +62,4 @@ docs/_build/
 .Trashes
 ehthumbs.db
 Thumbs.db
+.nfs*

@@ -1,6 +1,7 @@
 <h1>Orientation UV rPPG</h1>
 
-A self-contained Python package containing the video processing module similar to the paper <a href="https://samcantrill.github.io/orientation-uv-rppg/">Orientation-conditioned Facial Texture Mapping for Video-based Facial Remote Photoplethysmography Estimation</a>.
+A self-contained Python package containing the video processing module similar to that used in the paper <a href="https://samcantrill.github.io/orientation-uv-rppg/">Orientation-conditioned Facial Texture Mapping for Video-based Facial Remote Photoplethysmography Estimation</a>. For the full experimental code-base used to obtain the results in the paper please check out the `experiments` branch.
+
 
 <h2>:wrench: Installation</h2>
 
