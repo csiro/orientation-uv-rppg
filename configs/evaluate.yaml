@@ -1,0 +1,165 @@
+defaults:
+  - default
+  - _self_
+
+# Hyper-parameters
+frequencies: [0.70, 2.50]
+
+# Source
+inputs:
+  _target_: src.datamodules.datasources.paths.Paths
+  root: ${paths.notebook_dir}/ # input
+  regex: "*.HDF5" # all physnet
+  process:
+    _target_: src.datamodules.datasources.models.sample.DatasetSampleFile
+    _partial_: True
+
+# Processes
+processes:
+  _target_: src.datamodules.datapipes.DataPipe
+  operations:
+    # grouping into video-based samples
+    group_samples_by_video:
+      _target_: src.datamodules.datapipes.analysis.process.GroupVideoDatasetSamples
+      return_key: data
+    combine_grouped_samples:
+      _target_: src.datamodules.datapipes.analysis.process.CombineVideoDatasetSamples
+      return_key: videos
+    
+    # process videos
+    process_videos:
+      _target_: src.datamodules.datapipes.analysis.process.ProcessVideoDatasetSamples
+      process:
+        _target_: src.datamodules.datapipes.DataPipe
+        operations:
+          # prepare data
+          to_tensor:
+            _target_: src.datamodules.datapipes.transform.ToTensor # datamodel to tensor
+          targets_convert_to_timeseries:
+            _target_: src.datamodules.datapipes.transform.ConvertDataModel
+            key: targets/labels_unnormalized 
+            model:
+              _target_: src.datamodules.datamodels.timeseries.TimeseriesModel
+              _partial_: True
+          predictions_convert_to_timeseries:
+            _target_: src.datamodules.datapipes.transform.ConvertDataModel
+            key: predictions/signal
+            model:
+              _target_: src.datamodules.datamodels.timeseries.TimeseriesModel
+              _partial_: True
+          
+          # process signal
+          targets_compute_sps:
+            _target_: src.datamodules.datapipes.transform.signal.ComputeSamplingRate
+            key: targets/labels_unnormalized
+          predictions_compute_sps:
+            _target_: src.datamodules.datapipes.transform.signal.ComputeSamplingRate
+            key: predictions/signal
+
+          # copy
+          targets_copy_key:
+            _target_: src.datamodules.datapipes.transform.CopyKey
+            old_key: targets/labels_unnormalized
+            new_key: targets/labels_unnormalized_processed
+          predictions_copy_key:
+            _target_: src.datamodules.datapipes.transform.CopyKey
+            old_key: predictions/signal
+            new_key: predictions/signal_processed
+          
+          # process targets
+          targets_accumulate_signal:
+            _target_: src.datamodules.datapipes.transform.signal.AccumulateSignal
+            key: targets/labels_unnormalized_processed 
+          targets_detrend_signal:
+            _target_: src.datamodules.datapipes.transform.signal.TimeFIIRHighPassFilter
+            signal: targets/labels_unnormalized_processed 
+            lmbda: 100
+          targets_bandpass_filter:
+            _target_: src.datamodules.datapipes.transform.signal.ButterworthFilter
+            signal: targets/labels_unnormalized_processed 
+            order: 2
+            frequencies: ${frequencies}
+            ftype: bandpass
+          targets_dominant_frequency:
+            _target_: src.datamodules.datapipes.process.signal.DominantFrequency
+            signal: targets/labels_unnormalized_processed 
+            wn: ${frequencies}
+
+          # process predictions
+          predictions_accumulate_signal:
+            _target_: src.datamodules.datapipes.transform.signal.AccumulateSignal
+            key: predictions/signal_processed # vs. _filtered
+          predictions_detrend_signal:
+            _target_: src.datamodules.datapipes.transform.signal.TimeFIIRHighPassFilter
+            signal: predictions/signal_processed
+            lmbda: 100
+          predictions_bandpass_filter:
+            _target_: src.datamodules.datapipes.transform.signal.ButterworthFilter
+            signal: predictions/signal_processed
+            order: 2
+            frequencies: ${frequencies}
+            ftype: bandpass
+          predictions_dominant_frequency:
+            _target_: src.datamodules.datapipes.process.signal.DominantFrequency
+            signal: predictions/signal_processed
+            wn: ${frequencies}
+      return_key: videos
+
+    # export results
+    write_results:
+      _target_: src.datamodules.datapipes.export.DatasetSamplesWriter
+      writer:
+        _target_: src.datamodules.datapipes.export.DatasetSampleWriter
+        path: ${paths.notebook_dir}/PROCESSED_${inputs.regex}
+        write_targets: True
+        write_predictions: True
+        write_sources: True
+        write_targets_data: True
+        write_predictions_data: True
+        write_sources_data: True
+        export_batch: False 
+      keys:
+        targets: targets/labels_unnormalized_processed
+        predictions: predictions/signal_processed
+        sources: source/sample
+      return_key: path
+
+    # # plot results
+    # plot_results:
+    #   _target_: src.datamodules.datapipes.visualise.sample.ExportPPGResults
+    #   root: ${paths.notebook_dir}
+    #   return_key: videos
+
+    # # compute video errors
+    # compute_video_metrics:
+    #   _target_: src.datamodules.datapipes.analysis.process.MetricsVideoDatasetSamples
+    #   output_key: predictions/signal
+    #   target_key: targets/labels_unnormalized
+    #   metrics:
+    #     _target_: src.metrics.MetricModule
+    #     context: video_metrics
+    #     metrics:
+    #       PearsonCorrCoefSignal:
+    #         _target_: src.metrics.DynamicMetric
+    #         _partial_: True
+    #         metric: src.metrics.regression.PearsonCorrCoefItems # r of the HR values (needs to be done across all samples)
+    #         output_loc: signal/peak_bpm
+    #         target_loc: labels_unnormalized/peak_bpm
+    #         use_data: False
+    #       MeanAbsoluteErrorBPM:
+    #         _target_: src.metrics.DynamicMetric
+    #         _partial_: True
+    #         metric: torchmetrics.regression.MeanAbsoluteError
+    #         output_loc: signal/peak_bpm
+    #         target_loc: labels_unnormalized/peak_bpm
+    #         use_data: False # getattr
+    #   return_key: metrics
+    
+    # # prepare metrics for export
+    # group_video_metrics:
+    #   _target_: src.datamodules.datapipes.analysis.process.GroupMetricsAcrossVideos
+    #   return_key: metrics
+    # dump_video_metrics:
+    #   _target_: src.datamodules.datapipes.analysis.process.ExportVideoMetrics
+    #   filepath: ${paths.notebook_dir}/${inputs.regex}
+

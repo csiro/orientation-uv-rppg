@@ -1,0 +1,17 @@
+# MMPD Unsupervised Signal Processing Methods Conditions
+# https://github.com/McJackTang/MMPD_rPPG_dataset#unsupervised-signal-processing-methodssubset
+
+# Motion Comparison
+  # EXCLUDE exercise=True
+  # EXCLUDE light=natural
+
+source:
+  skip:
+    _target_: src.datamodules.datapipes.sample.filters.FilterDatasetSamplesOut
+    filters:
+      # Exclusion criterion
+      exclude_filter:
+        _target_: src.datamodules.datapipes.sample.filters.ExcludeIfAnyIn
+        match:
+          light: ["Nature"]
+          exercise: [True]

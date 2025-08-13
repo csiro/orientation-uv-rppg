@@ -1,0 +1,14 @@
+# --- Overfitting Training Scheme ---
+# Intended for validation whether model can adapt to a dataset (sanity check) by overfitting
+
+# Reproducibility
+deterministic: True
+
+# Utilize subset of training data to attempt to overfit model (0.01=1%).
+overfit_batches: 0.01
+  # Will set shuffle=False in DataLoaders
+
+# Display information
+enable_checkpointing: True
+enable_progress_bar: True
+enable_model_summary: True # (can also provide custom summary in callback)

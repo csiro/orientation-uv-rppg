@@ -1,0 +1,5 @@
+# --- 1-GPU Trainer Development ---
+defaults:
+  - dev_default
+  - accelerators@_here_: gpu
+  - schemes@_here_: train

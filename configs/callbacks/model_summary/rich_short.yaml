@@ -1,0 +1,8 @@
+# Model Summary
+
+#
+
+#
+
+_target_: lightning.pytorch.callbacks.RichModelSummary
+max_depth: 1

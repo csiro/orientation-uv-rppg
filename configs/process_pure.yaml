@@ -1,0 +1,40 @@
+# Defaults
+defaults:
+  - default
+  - _self_
+
+# Source dataset
+inputs:
+  _target_: src.datamodules.datasources.paths.Paths
+  root: ${paths.data_dir}/vital_signs/PURE_default/processed
+  regex: "01-01/" # Subject 1 / Scenario 1
+  process:
+    _target_: src.datamodules.datasources.pure.PURE_DataSample
+    _partial_: True
+
+# Dataset pre-processing
+processes:
+  _target_: src.datamodules.datapipes.DataPipe
+  operations:
+    construct_samples:
+      _target_: src.datamodules.datapipes.sample.construct.ProcessDatasetSamples
+      filenames:
+        video:
+          inputs/frames: video.avi
+        bvp:  
+          targets/labels: bvp.HDF5
+      use_detections: False
+      process:
+        _target_: src.datamodules.datapipes.DataPipe
+        operations:
+          resample_bvp_to_video:
+            _target_: src.datamodules.datapipes.transform.signal.ResampleToVideo
+            fkey: inputs/frames
+            skey: targets/labels
+            interpolate:
+              _target_: src.datamodules.datapipes.transform.signal.CubicSplineInterpolation
+              _partial_: True
+          export_bvp:
+            _target_: src.datamodules.datapipes.format.pure.PURE_ExportBVP
+            key: targets/labels
+            filename: bvp_resampled.HDF5

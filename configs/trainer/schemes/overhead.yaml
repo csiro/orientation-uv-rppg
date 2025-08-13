@@ -1,0 +1,13 @@
+# --- Overhead Analysis Scheme ---
+# Intended for analysis of trainer overhead.
+
+# Reproducibility
+deterministic: True
+
+# Disables additional features: intended for analyzing trainer overhead.
+barebones: True
+
+# Display information
+enable_checkpointing: True
+enable_progress_bar: True
+enable_model_summary: True # (can also provide custom summary in callback)

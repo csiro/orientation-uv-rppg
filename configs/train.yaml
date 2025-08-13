@@ -1,0 +1,25 @@
+# @package _global_
+defaults:
+  # Base
+  - default
+  - _self_
+
+  # Training
+  - loggers:
+    - mlflow_local
+    - wandb
+  - callbacks: default
+  - profiler: simple
+  - trainer: ddp_dev
+
+  # Experiment
+  - datamodule: mmpd
+  - model: physnet
+
+# Configuration
+launch_testing: False
+
+# Documentation
+project: motion_robustness_analysis
+type: train
+note: default

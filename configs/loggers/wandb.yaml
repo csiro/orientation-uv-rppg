@@ -1,0 +1,33 @@
+# Weights & Biases
+
+wandb:
+  _target_: src.utils.loggers.WandbLoggerInterface
+
+  # URI
+  project: ${project}
+
+  # UUID
+  version: ${oc.env:MLFLOW_RUN_UUID,null}
+
+  # Configuration
+  resume: "allow"
+  dir: ${paths.artifact_dir}/wandb
+
+  # Artifacts
+  log_model: False
+  save_code: False
+  
+  # Documentation
+  group: ${datamodule.name}_${model.name}
+  name: ${oc.env:MLFLOW_RUN_UUID,null}
+  job_type: ${hydra:job.name}
+  tags:
+    - dataset::${datamodule.name}
+    - model::${model.name}
+    - job::${hydra:job.name}
+    - type::${type}
+  notes: ${note}
+
+  
+
+  

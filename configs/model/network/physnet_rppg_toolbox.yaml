@@ -1,0 +1,5 @@
+defaults:
+ - physnet
+ - _self_
+
+dropouts: [0.00, 0.00, 0.00, 0.00] # no-dropout

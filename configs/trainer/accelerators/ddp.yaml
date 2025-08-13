@@ -1,0 +1,13 @@
+# --- DDP ---
+# Perform training with potentially multiple nodes and GPUs in a Distributed manner.
+
+# Strategy
+accelerator: gpu
+devices: auto # Maximum number of devices available
+num_nodes: 1
+
+strategy: ddp # ddp, ddp_spawn, etc. 
+
+# Modes
+# use_distributed_sampler: # If `False` then provide your own `DistibutedSampler` in the returned `DataLoader`
+sync_batchnorm: True # Sync batch norm statistics across processes (slow but useful is small batch size per device)

@@ -1,0 +1,66 @@
+defaults:
+  - default
+  - _self_
+
+# Hyper-parameters
+frequencies: [0.70, 2.50]
+
+# Source
+inputs:
+  _target_: src.datamodules.datasources.paths.Paths
+  root: ${paths.notebook_dir}/ # input
+  regex: "*.HDF5" # all physnet
+  process:
+    _target_: src.datamodules.datasources.models.sample.DatasetSampleFile
+    _partial_: True
+
+# Processes
+processes:
+  _target_: src.datamodules.datapipes.DataPipe
+  operations:
+    # Combine results across videos into single model (batch)
+    combine_results:
+      _target_: src.datamodules.datapipes.analysis.summary.StackDataModels
+      
+    # Metrics across videos
+    summary_metrics:
+      _target_: src.datamodules.datapipes.analysis.summary
+
+    # compute video errors
+    compute_video_metrics:
+      _target_: src.datamodules.datapipes.analysis.process.MetricsVideoDatasetSamples
+      output_key: predictions/signal_processed
+      target_key: targets/labels_unnormalized_processed
+      metrics:
+        _target_: src.metrics.MetricModule
+        context: video_metrics
+        metrics:
+          PearsonCorrCoefSignal:
+            _target_: src.metrics.DynamicMetric
+            _partial_: True
+            metric: src.metrics.regression.PearsonCorrCoefItems # r of the HR values across videos
+            output_loc: signal_processed/peak_bpm
+            target_loc: labels_unnormalized_processed/peak_bpm
+            use_data: False
+          # MeanAbsoluteErrorBPM:
+          #   _target_: src.metrics.DynamicMetric
+          #   _partial_: True
+          #   metric: torchmetrics.regression.MeanAbsoluteError
+          #   output_loc: signal_processed/peak_bpm
+          #   target_loc: labels_unnormalized_processed/peak_bpm
+          #   use_data: False # getattr
+      return_key: metrics
+
+    # print metrics
+    print_metrics:
+      _target_: src.datamodules.datapipes.analysis.summary.PrintMetrics
+      
+    
+    # # prepare metrics for export
+    # group_video_metrics:
+    #   _target_: src.datamodules.datapipes.analysis.process.GroupMetricsAcrossVideos
+    #   return_key: metrics
+    # dump_video_metrics:
+    #   _target_: src.datamodules.datapipes.analysis.process.ExportVideoMetrics
+    #   filepath: ${paths.notebook_dir}/${inputs.regex}
+

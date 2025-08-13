@@ -1,0 +1,55 @@
+# --- CPU Trainer Development ---
+defaults:
+  - dev_default
+  - accelerators@_here_: cpu
+  - schemes@_here_: train
+
+# max_epochs: 1
+
+# accelerator: "auto" 
+# devices: "auto"
+# strategy: "auto"
+# num_nodes: 1
+
+# precision: "32-true"
+# accumulate_grad_batches: 1 # Accum. over k batches
+# gradient_clip_val: None # Clip, with AMP will be un-scaled first
+# gradient_clip_algorithm: "norm"
+# use_distributed_sampler: None # wrap with Distributed Sampler (if FALSE then you have to provide your own in your `LightningDataModule`)
+# sync_batchnorm: False # Synch batch norm across processes (esp. useful if small batches per device but will incur overhead due to sync across devices)
+
+# deterministic: True # Forces deterministic algorithms where possible
+# benchmark: False # Enabled cudnn backend benchmarking to optimize algorithms (non-deterministic selection)
+# inference_mode: None # inf or no_grad during eval
+
+# fast_dev_run: True # N batches of train, val, and test
+
+# profiler: "simple" # profile steps an identify bottleneck simple, advanced, pytorchprofiler
+# detect_anomaly: False # Enable anomaly det for autograd
+# barebones: False # Disables all features
+
+# reload_dataloaders_every_n_epochs: 0
+# default_root_dir: None # Default path for logs/weights with no logger/checkpoint callback
+
+# min_epochs: None
+# max_epochs: 1 # Stop once reached
+# min_steps: -1
+# max_steps: None
+
+# max_time: None # Stop after wall-time DD:HH:MM:SS
+
+# limit_train_batches: 1.0 # 1.0
+# limit_test_batches: 1.0
+# limit_val_batches: 1.0
+# limit_predict_batches: 1.0 
+
+# overfit_batches: 0.0 # Overfit train/val
+
+# val_check_interval: 1.0 # Val every n-th of train
+# check_val_every_n_epoch: 1 # Val every n epochs
+# num_sanity_val_steps: 2 # Check val before train
+
+# log_every_n_steps: 50 # Log within steps
+# enable_checkpointing: True # Configure default checkpoint if no user-defined in callbacks
+# enable_progress_bar: False
+# enable_model_summary: True

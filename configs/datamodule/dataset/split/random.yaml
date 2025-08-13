@@ -1,0 +1,13 @@
+# Random Splitting
+construct:
+  operations:
+    #
+    split_index:
+      _target_: src.datamodules.datapipes.sample.samplers.RandomSplit
+      split: [0.70, 0.20, 0.10]
+      return_key: samples
+      
+    # assign_test:
+    #   _target_: src.datamodules.datapipes.sample.samplers.AssignSplit
+    #   stages: ["test"]
+    #   exclude: ["train"]

@@ -1,0 +1,19 @@
+defaults:
+  - inputs: physnet_uv # physnet_uv
+  - targets: physnet
+  - outputs: physnet
+  - predictions: physnet
+
+resolve:
+  inputs:
+    input: ${datamodule.dataset.frames}
+    output: inputs/traces
+  targets:
+    input: ${datamodule.dataset.labels}
+  outputs:
+    input: signal
+  predictions:
+    input: signal
+
+# Processing Parameters
+frequencies: [0.70, 2.50]

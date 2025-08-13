@@ -1,0 +1,2 @@
+_target_: lightning.pytorch.Trainer
+log_every_n_steps: 20

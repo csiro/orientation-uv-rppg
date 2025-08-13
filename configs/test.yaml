@@ -1,0 +1,25 @@
+# @package _global_
+defaults:
+  # Base
+  - default
+  - _self_
+
+  # Training
+  - loggers:
+    - mlflow_local
+    - wandb
+  - callbacks: default
+  - profiler: simple
+  - trainer: ddp_dev
+  
+  # Experiment
+  - datamodule: mmpd
+  - model: physnet
+
+# Model (override with +checkpoint=...)
+# checkpoint: ${oc.env:PROJECT_ROOT}/artifacts/hydra/train/2023-09-15/08-55-57_394326/model.ckpt # Required
+
+# Documentation
+project: motion_robustness_analysis
+type: test
+note: default

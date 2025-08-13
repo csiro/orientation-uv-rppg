@@ -1,0 +1,4 @@
+# @package hydra.sweeper
+_target_: hydra._internal.core_plugins.basic_sweeper.BasicSweeper
+max_batch_size: null
+# params: ...

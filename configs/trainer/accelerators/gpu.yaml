@@ -1,0 +1,6 @@
+# --- GPU ---
+# Perform training on a single GPU
+
+# Strategy
+accelerator: gpu
+devices: 1

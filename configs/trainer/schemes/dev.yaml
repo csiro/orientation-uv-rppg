@@ -1,0 +1,13 @@
+# --- Development Training Scheme ---
+# Intended for validation of training process without additional features
+
+# Reproducibility
+deterministic: True
+
+# Disables logging/checkpointing
+fast_dev_run: True
+
+# Display information
+enable_checkpointing: True
+enable_progress_bar: True
+enable_model_summary: True # (can also provide custom summary in callback)

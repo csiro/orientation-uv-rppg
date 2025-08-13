@@ -1,0 +1,35 @@
+# INPUTS: applied to the inputs provided to the model during training/validation/testing
+_target_: src.datamodules.datapipes.DataPipe
+operations: 
+  # NOTE: rPPG-Toolbox these processes are applied on a video-level
+
+  # 1-st Order Normalized Frame Difference
+  inputs_frame_difference_normalized:
+    _target_: src.datamodules.datapipes.transform.rppg_toolbox.DiffNormalizeFrames
+    key: ${assign:input}
+
+  # Convert Landmarks to Bounding Boxes
+  inputs_convert_to_bboxes:
+    _target_: src.datamodules.datapipes.transform.frames.ConvertToBoundingBoxes
+    dkey: detections/landmarks
+  
+  # Scale bounding boxes
+  inputs_scale_bboxes:
+    _target_: src.datamodules.datapipes.transform.frames.ScaleBoundingBoxes
+    fkey: ${assign:input}
+    dkey: detections/landmarks
+    scale: [1.5, 1.5] # Account for movement over window
+  
+  # Static crop on bounding boxes and resize
+  inputs_crop_on_bboxes_and_resize:
+    _target_: src.datamodules.datapipes.transform.frames.CropOnBoxResize
+    fkey: ${assign:input}
+    dkey: detections/landmarks
+    size: ${model.network.img_size}
+    frame_index: null # Static cropping (video-window's 0-th frame)
+    pad_square: False
+
+  # Normalization (only scaling to std)
+  # inputs_normalization:
+  #   _target_: src.datamodules.datapipes.transform.frames.VideoNormalization # no differencing
+  #   key: ${assign:input}

@@ -1,0 +1,10 @@
+# Automatic Mixed Precision
+
+# https://lightning.ai/docs/pytorch/stable/api/lightning.pytorch.callbacks.LearningRateMonitor.html#learningratemonitor
+
+#
+
+_target_: lightning.pytorch.plugins.precision.MixedPrecisionPlugin
+precision: "16-mixed"
+# device: 
+scaler: 

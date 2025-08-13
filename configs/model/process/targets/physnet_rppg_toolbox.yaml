@@ -1,0 +1,18 @@
+# TARGETS: applied to the targets to compare to during training/validation/testing
+_target_: src.datamodules.datapipes.DataPipe
+operations:
+  # Processes to apply to all copies
+  targets_difference_normalized:
+    _target_: src.datamodules.datapipes.transform.rppg_toolbox.DiffNormalizeLabels
+    key: ${assign:input}
+
+  # Copy
+  targets_copy_key:
+    _target_: src.datamodules.datapipes.transform.CopyKey
+    old_key: ${assign:input}
+    new_key: ${assign:input}_unnormalized # keep un-normalized for predictions (only normalize for loss calculation)
+
+  # Training-specific Target Processing
+  targets_normalize_for_loss: # NOTE: They normalize per batch
+    _target_: src.datamodules.datapipes.transform.signal.NormalizeSignal
+    key: ${assign:input}

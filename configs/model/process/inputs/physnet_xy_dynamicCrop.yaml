@@ -1,0 +1,34 @@
+# INPUTS: applied to the inputs provided to the model during training/validation/testing
+_target_: src.datamodules.datapipes.DataPipe
+operations: 
+
+  # ------- [ FACIAL CROPPING ] -------
+  inputs_convert_to_bboxes: # Convert Landmarks to Bounding Boxes
+    _target_: src.datamodules.datapipes.transform.frames.ConvertToBoundingBoxes
+    dkey: detections/landmarks
+  inputs_scale_bboxes: # Scale bounding boxes
+    _target_: src.datamodules.datapipes.transform.frames.ScaleBoundingBoxes
+    fkey: ${assign:input}
+    dkey: detections/landmarks
+    scale: [1.5, 1.5] # No scaling (for comaprison to rppgtoolbox)
+  inputs_crop_box_resize: # Crop onto the facial region (this differs from paper which uses static scaled box)
+    _target_: src.datamodules.datapipes.transform.frames.CropOnBoxResize
+    fkey: ${assign:input}
+    dkey: detections/landmarks
+    size: ${model.network.img_size}
+    frame_index: null # Dynamic cropping (per-frame)
+    pad_square: False
+
+
+  # ------- [ NORMALIZED FRAME DIFFERENCE ] -------
+  inputs_frame_difference_normalized: # 1-st Order Normalized Frame Difference
+    _target_: src.datamodules.datapipes.transform.rppg_toolbox.DiffNormalizeFrames
+    key: ${assign:input}
+  inputs_clip_3sigma: # Clip outliers
+    _target_: src.datamodules.datapipes.transform.frames.ClipFramesNSigma
+    frames: ${assign:input}
+    n: 3.00
+  inputs_normalize_to_std: # Standardize
+    _target_: src.datamodules.datapipes.transform.frames.NormalizeFrames
+    frames: ${assign:input}
+    mode: std  

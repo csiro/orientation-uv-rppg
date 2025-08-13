@@ -1,0 +1,16 @@
+# Attribute-based Splitting
+construct:
+  operations:
+    #
+    split_index:
+      _target_: src.datamodules.datapipes.sample.samplers.AttributeSplit
+      train:
+        _target_: src.datamodules.datapipes.sample.filters.FilterDatasetSamplesIn # shouldUse?
+        filters:
+          include_filter:
+            _target_: src.datamodules.datapipes.sample.filters.IncludeIfAllIn
+            match:
+              subject: [1, 2, 3, 4, 5, 6, 7, 8] #, 9, 10] # training subjects
+      assign_remaining: True
+      allow_multiple_stages: True # assign rem. to validation and testing
+      return_key: samples

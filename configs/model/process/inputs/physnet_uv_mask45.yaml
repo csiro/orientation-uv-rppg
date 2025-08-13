@@ -1,0 +1,37 @@
+_target_: src.datamodules.datapipes.DataPipe
+operations:
+  # ------- [ UV MASKING ] -------
+  inputs_fill_regions: # Fill regions based on thresholded mask (angles) 
+    _target_: src.datamodules.datapipes.transform.frames.ThresholdFramesByKeyLTE
+    fkey: ${assign:input}
+    mkey: inputs/angles
+    threshold: 217.66 # cos(45) # THRESHOLD = 255 (px) * (cos(theta) + 1) / 2
+    fill: 0.0 # fill fkey=0.0 where fkey<=threshold  
+
+
+  # ------- [ UV MASKING ] -------
+  inputs_resize_frames: # Resize Frames
+    _target_: src.datamodules.datapipes.transform.frames.SquareResizeFrames
+    fkey: ${assign:input}
+    dkey: detections/landmarks
+    size: ${model.network.img_size}
+
+
+  # ------- [ NORMALIZED FRAME DIFFERENCE ] -------
+  inputs_frame_difference_normalized: # 1-st Order Normalized Frame Difference
+    _target_: src.datamodules.datapipes.transform.rppg_toolbox.DiffNormalizeFrames
+    key: ${assign:input}
+  inputs_clip_3sigma: # Clip outliers
+    _target_: src.datamodules.datapipes.transform.frames.ClipFramesNSigma
+    frames: ${assign:input}
+    n: 3.00
+  inputs_normalize_to_std: # Standardize
+    _target_: src.datamodules.datapipes.transform.frames.NormalizeFrames
+    frames: ${assign:input}
+    mode: std
+
+  # Remove keys to avoid copying overhead to GPU
+  inputs_delete_key:
+    _target_: src.datamodules.datapipes.transform.DeleteKeys
+    keys: 
+      - inputs/angles

@@ -1,0 +1,28 @@
+# MMPD Simple Scenario
+# https://github.com/McJackTang/MMPD_rPPG_dataset#simplest-scenario
+
+# INCLUDE ONLY
+  # motion=stationary
+  # skintone=3
+  # light=[LED-high,LED-low]
+
+source:
+  skip:
+    _target_: src.datamodules.datapipes.sample.filters.FilterDatasetSamplesOut # shouldSkip?
+    filters:
+      # Protocol-specific inclusion criterion
+      include_filter:
+        _target_: src.datamodules.datapipes.sample.filters.IncludeIfAllIn
+        match:
+          motion: ["Stationary"]
+          light: ["LED-low", "LED-high", "Incandescent"]
+          skin_tone: [3]
+
+      # # Exclusion criterion
+      # exclude_filter:
+      #   _target_: src.datamodules.datapipes.sample.filters.ExcludeIfAnyIn
+      #   match:
+      #     exercise: [True]
+      #     glasses: [True]
+      #     hair_cover: [True]
+      #     makeup: [True]

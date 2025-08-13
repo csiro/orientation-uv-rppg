@@ -1,0 +1,6 @@
+defaults:
+  - dataset: pure
+  - dataloaders: default
+
+_target_: src.datamodules.DataModule
+name: ${datamodule.dataset.name}

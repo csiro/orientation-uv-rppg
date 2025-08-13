@@ -1,0 +1,40 @@
+defaults:
+  # Checkpoint
+  - checkpoints@train_checkpoint: train_checkpoint
+  - checkpoints@valid_checkpoint: valid_checkpoint
+  
+  # Early Stopping
+  # - early_stopping: overfit_stopping
+
+  # Monitoring
+  - learning_rate_monitor: learning_rate_monitor
+  # - device_statistics_monitor: full_monitor
+
+  # Logging
+  - model_summary: rich_full
+  - progress_bar: rich_progress_bar
+
+
+# Default Callbacks
+  # callbacks ... _connector_callbacks for list of defaults
+  # enabled_checkpointing
+  # enable_progress_bar
+  # default_root_dir
+  # enable_model_summary
+  # max_time
+
+# Callbacks
+  # SaveConfig - No
+  # DeviceStatsMonitor - No (Causes significant speed issues)
+  # EarlyStopping - Done
+  # LearningRateMonitor - Done
+  # ModelCheckpoint - Done
+  # ModelSummary - Done
+  # ProgressBar - Done
+
+# Unused Callbacks
+  # ModelPruning
+  # LearningRateFinder # Run before experimentation (2)
+  # LambdaCallback # Custom on-the-fly callback using a lambda function
+  # GradientAccumulationScheduler # Changing of the effective batch-size during training
+  # BatchSizeFinder # Run before experimentation (1)

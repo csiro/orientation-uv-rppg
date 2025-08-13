@@ -1,0 +1,6 @@
+# --- CPU Training ---
+# Perform training on a single CPU
+
+# Strategy
+accelerator: cpu
+devices: 1

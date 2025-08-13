@@ -1,0 +1,56 @@
+# Defaults
+defaults:
+  - default
+  - _self_
+
+# Source dataset
+inputs:
+  _target_: src.datamodules.datasources.paths.Paths
+  root: ${paths.data_dir}/MMPD-formatted
+  regex: "*/"
+  process:
+    _target_: src.datamodules.datasources.mmpd.MMPD_DatasetSample
+    detections: FaceDetector_FaceMeshV2_landmarks.HDF5
+    _partial_: True
+
+# Dataset pre-processing
+processes:
+  _target_: src.datamodules.datapipes.DataPipe
+  operations:
+    construct_samples:
+      _target_: src.datamodules.datapipes.sample.construct.ProcessDatasetSamples
+      filenames:
+        video:
+          inputs/frames: null # default
+        detections:
+          detections/landmarks: FaceDetector_FaceMeshV2_landmarks.HDF5 # default
+      use_detections: True # slice frames for available detections
+      fkey: inputs/frames
+      dkey: detections/landmarks
+      process:
+        _target_: src.datamodules.datapipes.DataPipe
+        operations:
+          compute_uv:
+            _target_: src.datamodules.datapipes.transform.frames.ComputeFramesAndAnglesUV
+            fkey: inputs/frames
+            dkey: detections/landmarks
+            frames_okey: outputs/frames_uv
+            angles_okey: outputs/angles_uv
+            size: 128
+            fill: 0.0 # angle fill
+          export_frames_uv:
+            _target_: src.datamodules.datapipes.format.ExportSlicedVideoFrames
+            key: outputs/frames_uv
+            dkey: detections/landmarks
+            dirname: frames_uv
+            sz: 128
+          export_angles_uv:
+            _target_: src.datamodules.datapipes.format.ExportSlicedVideoFrames
+            key: outputs/angles_uv
+            dkey: detections/landmarks
+            dirname: angles_uv
+            sz: 128
+          export_landmarks_uv:
+            _target_: src.datamodules.datapipes.format.ExportLandmarks
+            key: detections/landmarks_uv
+            filename: UV_${inputs.process.detections} # appended to existing fileloc

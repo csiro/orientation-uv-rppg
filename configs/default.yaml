@@ -1,0 +1,6 @@
+# @package _global_
+defaults:
+  - paths: default
+  - hydra: default
+
+seed: 0

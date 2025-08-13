@@ -1,0 +1,8 @@
+# OUTPUTS: applied to model outputs during training and validation/testing for loss calculation
+# NOTE: Does not get applied to predictions
+_target_: src.datamodules.datapipes.DataPipe
+operations:
+  # rPPG BVP Waveform
+  outputs_normalize:
+    _target_: src.datamodules.datapipes.transform.signal.NormalizeSignal
+    key: ${assign:input}

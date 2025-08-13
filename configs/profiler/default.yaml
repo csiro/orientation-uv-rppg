@@ -1,0 +1,2 @@
+dirpath: ${hydra:runtime.output_dir}
+filename: profiler.logs

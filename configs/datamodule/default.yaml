@@ -1,0 +1,7 @@
+defaults:
+  - dataloaders: default
+
+_target_: src.datamodules.mnist.MNISTDataModule
+name: "MNIST"
+split: [0.7, 0.3]
+source: ${paths.data_dir}

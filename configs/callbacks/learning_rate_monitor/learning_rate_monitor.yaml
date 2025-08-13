@@ -1,0 +1,9 @@
+# Learning Rate Monitor
+
+# https://lightning.ai/docs/pytorch/stable/api/lightning.pytorch.callbacks.LearningRateMonitor.html#learningratemonitor
+
+#
+
+_target_: lightning.pytorch.callbacks.LearningRateMonitor
+# logging_interval: None
+log_momentum: True

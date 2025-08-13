@@ -1,0 +1,53 @@
+# INPUTS: applied to the inputs provided to the model during training/validation/testing
+_target_: src.datamodules.datapipes.DataPipe
+operations: 
+  # NOTE: rPPG-Toolbox these processes are applied on a video-level
+
+  # ------- [ FACIAL CROPPING ] -------
+  inputs_convert_to_bboxes: # Convert Landmarks to Bounding Boxes
+    _target_: src.datamodules.datapipes.transform.frames.ConvertToBoundingBoxes
+    dkey: detections/landmarks
+  inputs_scale_bboxes: # Scale bounding boxes
+    _target_: src.datamodules.datapipes.transform.frames.ScaleBoundingBoxes
+    fkey: ${assign:input}
+    dkey: detections/landmarks
+    scale: [1.5, 1.5] # Account for movement over window
+  # inputs_crop_on_boxes: # Static crop on bounding boxes and resize
+  #   _target_: src.datamodules.datapipes.transform.frames.CropOnBoundingBoxes
+  #   fkey: ${assign:input}
+  #   dkey: detections/landmarks
+  #   frame_index: 0 # Static cropping (video-window's 0-th frame)
+  # inputs_crop_box_resize:
+  #   _target_: src.datamodules.datapipes.transform.frames.CropOnBoxResize
+  #   fkey: ${assign:input}
+  #   dkey: detections/landmarks
+  #   size: ${model.network.img_size}
+  #   frame_index: 0 # Static cropping (video-window's 0-th frame)
+  #   pad_square: False
+  inputs_crop_box:
+    _target_: src.datamodules.datapipes.transform.frames.CropOnBoundingBoxes
+    fkey: ${assign:input}
+    dkey: detections/landmarks
+    frame_index: 0
+
+  # ------- [ NORMALIZED FRAME DIFFERENCE ] -------
+  # 1-st Order Normalized Frame Difference
+  inputs_frame_difference_normalized:
+    _target_: src.datamodules.datapipes.transform.rppg_toolbox.DiffNormalizeFrames
+    key: ${assign:input}
+  inputs_clip_3sigma:
+    _target_: src.datamodules.datapipes.transform.frames.ClipFramesNSigma
+    frames: ${assign:input}
+    n: 3.00
+  inputs_normalize_to_std:
+    _target_: src.datamodules.datapipes.transform.frames.NormalizeFrames
+    frames: ${assign:input}
+    mode: std
+
+
+  # ------- [ RESIZE ] -------
+  inputs_resize: # Resize
+    _target_: src.datamodules.datapipes.transform.frames.ResizeFrames
+    fkey: ${assign:input}
+    dkey: detections/landmarks
+    size: ${model.network.img_size}

@@ -1,0 +1,95 @@
+# Defaults
+defaults:
+  - _self_ 
+  - default
+  # - scenario/mmpd_simple@_here_
+  # - scenario/mmpd_motion@_here_
+  # - split/cross_validation_exclude@_here_
+  # - split/cross_validation@_here_
+  - split/all_test@_here_
+  # - split/random@_here_
+
+# Target
+_target_: src.datamodules.datasets.mmpd.MMPDDataset
+name: MMPD
+
+# Keys : useful for referencing in model config
+frames: inputs/frames
+labels: targets/labels
+
+# Detections
+detections: FaceDetector_FaceMeshV2_landmarks.HDF5
+
+# Filenames
+filenames:
+  video:
+    inputs/frames: null
+  bvp:
+    targets/labels: null
+  detections:
+    detections/landmarks: null # default (see above)
+  metadata:
+    source/sample: null
+
+# Cache
+cache: ${oc.env:DATA_ROOT}/MMPD/cache/${oc.env:MLFLOW_RUN_UUID,"test"}
+
+# Source
+source:
+  _target_: src.datamodules.datasources.paths.Paths
+  # root: "${paths.data_dir}/vital_signs/MMPD/MMPD_full_processed" # SSHFS mounted to Bracewell
+  # root: /mnt/d61-icvstaff/work/datasets/vital_signs/MMPD/MMPD_full_processed # TALOS
+  root: ${oc.env:DATA_ROOT}/MMPD/MMPD_full_reformatted # NAS
+  regex: "*/"
+  process:
+    _target_: src.datamodules.datasources.mmpd.MMPD_DatasetSample
+    detections: ${datamodule.dataset.detections} # assign default detection file
+    _partial_: True
+      
+# Samples
+construct:
+  _target_: src.datamodules.datapipes.DataPipe
+  operations: 
+    construct_dataset_samples:
+      _target_: src.datamodules.datapipes.sample.construct.GenerateFrameSlices
+      window: ${model.network.window}
+      start: 90
+      stride: null
+      stop: 1770
+      return_key: samples # Dict[int, SampleAttrs]
+
+# Processing
+process:
+  _target_: src.datamodules.datapipes.DataPipe
+  operations: # Appended with model-specific processes
+    prepare:
+      _target_: src.datamodules.datapipes.transform.ToPrepared # to torchvision
+    to_float: 
+      _target_: src.datamodules.datapipes.transform.frames.ToFloat # to [0-1|FP32]
+      fkey: inputs/frames
+      max_value: 255
+    to_tensor:
+      _target_: src.datamodules.datapipes.transform.ToTensor # to tensor
+
+# # Augmentations
+# augment:
+#   _target_: src.datamodules.datapipes.DataPipe
+#   operations:
+#     horizontal_flip:
+#       _target_: src.datamodules.datapipes.augment.HorizontalFlipVideo
+#       fkey: inputs/frames
+#       dkey: detections/landmarks
+#       always_apply_video: False
+#       p_video: 0.50
+#       always_apply_frame: True
+#       per_video: True
+#     rotate:
+#       _target_: src.datamodules.datapipes.augment.RotateVideo
+#       fkey: inputs/frames
+#       dkey: detections/landmarks
+#       always_apply_video: False
+#       p_video: 0.50
+#       always_apply_frame: True
+#       per_video: True
+#       aug_args:
+#         limit: [-15, 15]

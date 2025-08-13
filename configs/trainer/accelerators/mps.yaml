@@ -1,0 +1,5 @@
+# --- CPU Training ---
+
+# Strategy
+accelerator: mps
+devices: 1

@@ -1,0 +1,6 @@
+# --- Auto ---
+# Perform training on a single GPU
+
+# Strategy
+accelerator: auto
+devices: auto

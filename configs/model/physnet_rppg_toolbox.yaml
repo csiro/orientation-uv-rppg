@@ -1,0 +1,99 @@
+# Provide an approximate implementation of the Pipleine used in the rPPG-Toolbox
+# See: https://github.com/ubicomplab/rPPG-Toolbox/blob/main/configs/train_configs/PURE_PURE_UBFC-PHYS_PHYSNET_BASIC.yaml
+
+# Defaults
+defaults:
+  - network: physnet_rppg_toolbox
+  - process: physnet_rppg_toolbox
+  - _self_
+
+# Target
+_target_: src.models.physnet.PhysNet
+name: PhysNet3DCNN
+
+# Learning Recipe
+batch_size: 4
+max_epochs: 30
+
+# Loss Criterion
+losses:
+  _target_: src.metrics.MetricModule
+  _partial_: True
+  context: losses
+  metrics:
+    NegativePearsonCorrCoefSignal:
+      _target_: src.metrics.DynamicMetric
+      _partial_: True
+      metric: src.metrics.regression.NegativePearsonCoffCoef
+      output_loc: signal
+      target_loc: labels
+      use_data: True
+
+# Metrics
+metrics:
+  _target_: src.metrics.MetricModule
+  _partial_: True
+  context: metrics
+  metrics:
+    # BVP Waveform
+    PearsonCorrCoefSignal:
+      _target_: src.metrics.DynamicMetric
+      _partial_: True
+      metric: src.metrics.regression.AveragePearsonCoffCoef # 1 - r
+      output_loc: signal
+      target_loc: labels
+      use_data: True
+
+# Optimizer
+optimizers:
+  _target_: src.utils.optimizers.OptimizerFactory
+  optimizers:
+    primary: # no weight decay
+      _target_: torch.optim.Adam
+      _partial_: True
+      lr: 9e-3
+
+# Learning Rate Scheduler
+schedulers: 
+  _target_: src.utils.schedulers.SchedulerConfigurationFactory
+  schedulers:
+    primary:
+      _target_: src.utils.schedulers.SchedulerConfiguration
+      scheduler:
+        _target_: torch.optim.lr_scheduler.OneCycleLR
+        _partial_: True
+        max_lr: ${model.optimizers.optimizers.primary.lr}
+        epochs: ${trainer.max_epochs}
+        steps_per_epoch: ${dynamic_steps_per_epoch:${oc.env:TRAIN_SAMPLES},${datamodule.dataloaders.train.batch_size}}
+      configuration:
+        _target_: src.utils.schedulers.Configuration
+        _partial_: True
+        interval: "step"
+        frequency: 1
+      optimizer: primary
+
+# Writer
+writer:
+  _target_: src.datamodules.datapipes.export.DatasetSampleWriter
+  path: ${paths.root_dir}/notebooks/${model.name}_${datamodule.dataset.name}_${oc.env:MLFLOW_REFERENCED_RUN_UUID,null}.HDF5
+  # Write metadata, predictions, losses and metrics
+  write_inputs: False
+  write_targets: True
+  write_sources: True # 
+  write_outputs: False
+  write_predictions: True
+  write_losses: True #
+  write_metrics: True #
+  
+  # Write data for losses and metrics only
+  write_inputs_data: True
+  write_targets_data: True
+  write_sources_data: True
+  write_outputs_data: True
+  write_predictions_data: True
+  write_losses_data: True
+  write_metrics_data: True
+
+  # additional information
+  model_name: ${model.name}
+  model_uuid: ${oc.env:MLFLOW_REFERENCED_RUN_UUID,"NOT_AVAILABLE"}

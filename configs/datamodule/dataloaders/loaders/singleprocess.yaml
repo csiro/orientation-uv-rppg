@@ -1,0 +1,20 @@
+# DataLoader
+
+# NOTE: If you ready-to-go dataset can fit in-memory then fine to use no workers.
+_target_: torch.utils.data.DataLoader
+_partial_: True
+
+# Sampling
+batch_size: ${dynamic_batch_size:${oc.select:model.batch_size,1},${oc.env:NUM_DEVICES,1}} # defaults to 1
+shuffle: True
+# sampler: None # Specify sequence of idxs in map-style loading, 'Sampler` will be wrapped with `DistributedSampler` by Lightning
+# batch_sampler: None # Neither sampler or batch_sampler compatible with iterable-style datasets
+# collate_fn: None
+drop_last: True
+
+# Batcher
+collate_fn: 
+  _target_: src.datamodules.BatchCollater
+
+# Accelerator
+pin_memory: ${dynamic_pin_memory:${trainer.accelerator}} # Custom resolve to pin if accel. enabled based on strategy

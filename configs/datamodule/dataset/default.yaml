@@ -1,0 +1,13 @@
+# Defaults
+defaults:
+  - _self_
+  # - /model/dataset_input_processing@_here_ # Process inputs to model
+  # - /model/dataset_target_processing@_here_ # Process targets to model
+
+# Target : define which dataset...
+ 
+# Source : define which inputs...
+
+# Index : define how to construct (scenario & experiment)...
+
+# Process : define dataset specific processing...

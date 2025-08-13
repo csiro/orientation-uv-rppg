@@ -1,0 +1,11 @@
+# --- Training Scheme ---
+# Normal training
+
+# Allow logging/checkpointing with limited data (10%)
+max_epochs: ${oc.select:model.max_epochs,10}
+num_sanity_val_steps: 0
+
+# Display information
+enable_checkpointing: True
+enable_progress_bar: True
+enable_model_summary: True # (can also provide custom summary in callback)

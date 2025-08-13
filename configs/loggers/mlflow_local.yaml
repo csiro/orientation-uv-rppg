@@ -1,0 +1,27 @@
+# MLFlow Logger
+  # NOTE: `Trainer` will set the `root_dir` based on the `log_dir` of the first logger.
+  # NOTE: We always instantiate the primary logger first.
+
+mlflow:
+  _target_: src.utils.loggers.MLFlowLoggerInterface
+  
+  # URI
+  tracking_uri: file:${paths.artifact_dir}/mlruns
+  # artifact_location: ...
+
+  # UUID
+  run_id: ${oc.env:MLFLOW_RUN_UUID,null}
+
+  # Artifacts
+  log_model: "all" # Log models saved by `ModelCheckpoint` as artifacts
+  
+  # Documentation
+  experiment_name: ${datamodule.name}_${model.name}
+  run_name: ${oc.env:MLFLOW_RUN_UUID,null}
+  tags:
+    dataset: ${datamodule.dataset.name}
+    model: ${model.name}
+    job: ${hydra:job.name}
+    type: ${type}
+    mlflow.note.content: ${note}
+    project: ${project}

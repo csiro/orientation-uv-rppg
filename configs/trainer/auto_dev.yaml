@@ -1,0 +1,5 @@
+# --- Trainer Development ---
+defaults:
+  - dev_default
+  - accelerators@_here_: auto
+  - schemes@_here_: train

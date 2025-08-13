@@ -1,0 +1,10 @@
+name: orientation-uv-rppg
+channels:
+  - defaults
+dependencies:
+  - python==3.8.10
+  - pip
+  - pip:
+    - -r requirements.txt
+variables:
+  PROJECT_NAME: dev # default project name

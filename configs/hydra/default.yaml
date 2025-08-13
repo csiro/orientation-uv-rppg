@@ -1,0 +1,29 @@
+# @package hydra
+# Configure aspects and subsystems including
+  # Launcher
+  # Sweeper
+  # Logging
+  # Output Directory
+  # Application Help
+
+defaults:
+  # Job
+  - job: default
+
+  # Directory
+  - run: default
+  - sweep: default
+
+  # Logging
+  - logging@job_logging: default
+
+  # Callbacks
+  - callbacks: 
+    - mlflow
+
+  # Launcher
+  - override launcher: default
+  - override sweeper: default
+
+# output_subdir: ".hydra" # null to disable creation
+verbose: INFO

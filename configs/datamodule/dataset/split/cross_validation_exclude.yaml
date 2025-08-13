@@ -1,0 +1,23 @@
+# MMPD Motion k-fold Cross Validation (Exclusionary Criterion)
+
+# NOTE: Requires the leave-one-out motion-condition to be assigned (use multirun or assign programatically).
+
+construct:
+  operations:
+    # Outer-split
+    outer_split:
+      _target_: src.datamodules.datapipes.sample.samplers.AttributeSplit
+      # Hold-out to be used for testing (1)
+      test:
+        _target_: src.datamodules.datapipes.sample.filters.FilterIn
+        filters:
+          exclude_filter:
+            _target_: src.datamodules.datapipes.sample.filters.ExcludeIfAnyIn
+            match: null
+      return_key: samples
+    
+    # Inner-split (k-1) is randomly split into inner-training and inner-validation
+    inner_split:
+      _target_: src.datamodules.datapipes.sample.samplers.RandomSplit
+      split: [0.7, 0.3, 0.0]
+      return_key: samples

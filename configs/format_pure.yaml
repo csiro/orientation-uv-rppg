@@ -1,0 +1,25 @@
+# Defaults
+defaults:
+  - default
+  - _self_
+
+# PURE Dataset
+# Source dataset
+inputs:
+  _target_: src.datamodules.datasources.paths.Paths
+  root: ${paths.data_dir}/PURE # Dataset
+  regex: "*/" # all sample roots
+
+# Conversion processes
+processes:
+  _target_: src.datamodules.datapipes.DataPipe
+  operations:
+    format_dataset:
+      _target_: src.datamodules.datapipes.format.FormatDatasetFiles
+      return_key: roots # Key for next stage
+      formatter:
+        _target_: src.datamodules.datapipes.format.pure.PURE_Formatter
+        root: ${paths.data_dir}/PURE-formatted
+        overwrite_video: True
+        overwrite_bvp: True
+        overwrite_metadata: True

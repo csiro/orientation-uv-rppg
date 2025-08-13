@@ -1,0 +1,7 @@
+defaults:
+  - dataloaders@train: singleprocess # Utilize multi-process dataloadig, worker and device config automated
+  - dataloaders@valid: singleprocess
+  - dataloaders@test: singleprocess
+  - _self_
+
+_target_: src.datamodules.DataModule

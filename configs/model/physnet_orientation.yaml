@@ -1,0 +1,115 @@
+# Defaults
+defaults:
+  - network: physnet_orientation
+  - process: physnet_orientation
+  - _self_
+
+# Target
+_target_: src.models.physnet.PhysNet
+name: PhysNet3DCNN_Orientation
+
+# Learning Recipe
+batch_size: 16
+max_epochs: 100
+
+# Loss Criterion
+losses:
+  _target_: src.metrics.MetricModule
+  _partial_: True
+  context: losses
+  metrics:
+    NegativePearsonCorrCoefSignal:
+      _target_: src.metrics.DynamicMetric
+      _partial_: True
+      metric: src.metrics.regression.NegativePearsonCoffCoef
+      output_loc: signal
+      target_loc: labels
+      use_data: True
+
+# Metrics
+metrics:
+  _target_: src.metrics.MetricModule
+  _partial_: True
+  context: metrics
+  metrics:
+    # BVP Waveform
+    # RootMeanSquaredErrorSignal:
+    #   _target_: src.metrics.DynamicMetric
+    #   _partial_: True
+    #   metric: torchmetrics.regression.MeanSquaredError
+    #   squared: False
+    #   output_loc: signal
+    #   target_loc: labels
+    #   use_data: True
+    MeanAbsoluteErrorSignal:
+      _target_: src.metrics.DynamicMetric
+      _partial_: True
+      metric: torchmetrics.regression.MeanAbsoluteError
+      output_loc: signal
+      target_loc: labels
+      use_data: True
+    PearsonCoffCoefSignal:
+      _target_: src.metrics.DynamicMetric
+      _partial_: True
+      metric: src.metrics.regression.AveragePearsonCoffCoef
+      output_loc: signal
+      target_loc: labels
+      use_data: True
+
+    # HR BPM
+    MeanAbsoluteErrorBPM:
+      _target_: src.metrics.DynamicMetric
+      _partial_: True
+      metric: torchmetrics.regression.MeanAbsoluteError
+      output_loc: signal_filtered/peak_bpm
+      target_loc: labels_filtered/peak_bpm
+      use_data: False # getattr
+    # PearsonCorrCoefBPM:
+    #   _target_: src.metrics.DynamicMetric
+    #   _partial_: True
+    #   metric: src.metrics.regression.PearsonCorrCoefItems
+    #   output_loc: signal_filtered/peak_bpm
+    #   target_loc: labels_filtered/peak_bpm
+    #   num_outputs: 1
+    SignalToNoiseRatioBPM: # NOTE: this is a specific implementation which avoids re-computing...
+      _target_: src.metrics.signal.SignalToNoiseRatio
+      _partial_: True
+      harmonic_delta: 0.1
+      wn: [0.70, 2.50]
+      output_loc: signal_filtered
+      target_loc: labels_filtered
+      db: True
+
+# Optimizer
+optimizers:
+  _target_: src.utils.optimizers.OptimizerFactory
+  optimizers:
+    primary:
+      _target_: torch.optim.Adam
+      _partial_: True
+      lr: 1e-3
+
+# # Learning Rate Scheduler
+# schedulers:
+#   _target_: src.utils.schedulers.SchedulerConfigurationFactory
+#   schedulers:
+#     primary:
+#       _target_: src.utils.schedulers.SchedulerConfiguration
+#       scheduler:
+#         _target_: torch.optim.lr_scheduler.OneCycleLR
+#         _partial_: True
+#         max_lr: ${model.optimizers.optimizers.primary.lr}
+#         epochs: ${trainer.max_epochs}
+#         steps_per_epoch: ${estimated_steps:${oc.env:TRAIN_SAMPLES},${model.batch_size},${oc.env:NUM_DEVICES}}
+#         pct_start: 0.15
+#       configuration:
+#         _target_: src.utils.schedulers.Configuration
+#         _partial_: True
+#         interval: "step"
+#         frequency: 1
+#       optimizer: primary
+
+# Writer
+writer:
+  _target_: src.utils.writers.Writer
+  path: ${paths.root_dir}/notebooks/${model.name}_${oc.env:MLFLOW_REFERENCED_RUN_UUID,null}.HDF5

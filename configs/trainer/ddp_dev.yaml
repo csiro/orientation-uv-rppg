@@ -1,0 +1,5 @@
+# --- DDP (N-GPU) Trainer Development ---
+defaults:
+  - dev_default
+  - accelerators@_here_: ddp
+  - schemes@_here_: train

@@ -1,0 +1,10 @@
+# @package paths
+
+# Root Directory
+root_dir: ${oc.env:PROJECT_ROOT}
+
+# Subdirectories
+data_dir: ${os.env:DATA_ROOT}
+model_dir: ${paths.root_dir}/models
+artifact_dir: ${paths.root_dir}/artifacts
+notebook_dir: ${paths.root_dir}/notebooks

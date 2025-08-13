@@ -1,0 +1,49 @@
+# PREDICTIONS: applied to model outputs during validation/testing for metric calculation
+_target_: src.datamodules.datapipes.DataPipe
+operations:
+  # # Processes to apply to all
+  # predictions_normalize_to_std:
+  #   _target_: src.datamodules.datapipes.transform.signal.NormalizeSignal
+  #   key: ${assign:input}
+
+  # # Prepare data
+  # predictions_detach:
+  #   _target_: src.datamodules.datapipes.transform.DetachTensor
+  #   keys:
+  #     - ${assign:input}
+  # predictions_move_to_cpu:
+  #   _target_: src.datamodules.datapipes.transform.MoveTensorToCpu
+  #   keys: 
+  #     - ${assign:input}
+  # predictions_copy_key:
+  #   _target_: src.datamodules.datapipes.transform.CopyKey
+  #   old_key: ${assign:input}
+  #   new_key: ${assign:input}_filtered
+
+  # rPPG BVP Waveform
+  # accumulate_signal:
+  #   _target_: src.datamodules.datapipes.transform.signal.AccumulateSignal
+  #   key: ${assign:input} # vs. _filtered
+
+  # # Heart-rate BPM  
+  # predictions_detrend_signal:
+  #   _target_: src.datamodules.datapipes.transform.signal.TimeFIIRHighPassFilter
+  #   signal: ${assign:input}_filtered
+  #   lmbda: 100
+  # predictions_bandpass_filter:
+  #   _target_: src.datamodules.datapipes.transform.signal.ButterworthFilter
+  #   signal: ${assign:input}_filtered
+  #   order: 2 # effective 4-th order since apply forward and backward
+  #   frequencies: ${model.process.frequencies}
+  #   ftype: bandpass
+  # predictions_dominant_frequency:
+  #   _target_: src.datamodules.datapipes.process.signal.DominantFrequency
+  #   signal: ${assign:input}_filtered
+  #   wn: ${model.process.frequencies}
+
+  # # Prepare data
+  # predictions_move_to_device:
+  #   _target_: src.datamodules.datapipes.transform.MoveTensorToDevice
+  #   keys: 
+  #     - ${assign:input}
+  #     - ${assign:input}_filtered

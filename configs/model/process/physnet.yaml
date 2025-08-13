@@ -1,0 +1,16 @@
+defaults:
+  - inputs: physnet # physnet, physnet_paper, physnet_rppgtoolbox
+  - targets: physnet
+  - outputs: physnet
+  # - predictions: physnet
+
+resolve:
+  inputs:
+    input: ${datamodule.dataset.frames}
+    output: inputs/traces
+  targets:
+    input: ${datamodule.dataset.labels}
+  outputs:
+    input: signal
+  # predictions:
+  #   input: signal

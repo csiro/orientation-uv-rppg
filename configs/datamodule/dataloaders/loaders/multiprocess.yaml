@@ -1,0 +1,15 @@
+# DataLoader
+defaults:
+    - singleprocess
+
+# Workers
+num_workers: 8
+# # worker_init_fn: None
+prefetch_factor: 2
+timeout: 0
+persistent_workers: True # persists workers across epochs (faster)
+
+# Notes
+  # prefetch_factor number of X to pre-fetch
+  # persistent_workers instances, increase performance (time) and memory usage
+  # if initialise per epoch can take time, if you can fit in mem then leave True

@@ -1,0 +1,26 @@
+# Defaults
+defaults:
+  - default
+  - _self_
+
+# MMPD Dataset
+inputs:
+  _target_: src.datamodules.datasources.paths.Paths
+  root: ${paths.data_dir}/MMPD # input
+  regex: "**/*.mat"
+
+# Conversion processes
+processes:
+  _target_: src.datamodules.datapipes.DataPipe
+  operations:
+    format_dataset:
+      _target_: src.datamodules.datapipes.format.FormatDatasetFiles
+      return_key: roots # Key for next stage
+      formatter:
+        _target_: src.datamodules.datapipes.format.mmpd.MMPD_Formatter
+        root: ${paths.data_dir}/MMPD-formatted
+        overwrite_video: True
+        overwrite_bvp: False
+        overwrite_metadata: False
+        export_as_frames: True # overrides ffmpeg
+        use_ffmpeg: True

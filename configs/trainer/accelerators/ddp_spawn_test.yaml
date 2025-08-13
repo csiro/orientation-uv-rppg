@@ -1,0 +1,8 @@
+# --- DDP Testing ---
+# Assign DDP on a CPU (useful for testing)
+
+# Strategy
+accelerator: cpu
+devices: 2
+
+strategy: ddp_spawn # ddp, ddp_spawn, etc. 

@@ -1,0 +1,22 @@
+# Attribute-based Splitting
+construct:
+  operations:
+    #
+    split_index:
+      _target_: src.datamodules.datapipes.sample.samplers.AttributeSplit
+      train:
+        _target_: src.datamodules.datapipes.sample.filters.FilterIn # shouldUse?
+        filters:
+          include_filter:
+            _target_: src.datamodules.datapipes.sample.filters.IncludeIfAllIn
+            match:
+              motion: ["Stationary"]
+        assign_remaining: False
+        allow_multiple_stages: False
+      return_key: samples
+
+    #
+    random_split_remaining:
+      _target_: src.datamodules.datapipes.sample.samplers.RandomSplit
+      split: [0.00, 0.50, 0.50]
+      return_key: samples

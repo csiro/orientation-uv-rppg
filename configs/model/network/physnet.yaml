@@ -1,0 +1,12 @@
+_target_: src.models.networks.physnet.PhysNet3DCNN
+in_channels: 3
+window: 128
+
+# Resolution
+# img_size: 36 # Paper
+img_size: 72 # rPPG-Toolbox
+# img_size: 128 # Ours
+
+# Drop-outs
+# dropouts: [0.00, 0.00, 0.00, 0.00] # Paper + rPPG-Toolbox
+dropouts: [0.10, 0.10, 0.10, 0.10] # Ours

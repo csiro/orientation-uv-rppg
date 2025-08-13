@@ -1,0 +1,38 @@
+# Defaults
+defaults:
+  - default
+  - _self_
+
+# PURE-formatted
+inputs:
+  _target_: src.datamodules.datasources.paths.Paths
+  root: ${paths.data_dir}/PURE-formatted
+  regex: "*/video.avi"
+
+# Video Features
+processes:
+  _target_: src.datamodules.datapipes.DataPipe
+  operations:
+    # Landmark Detection
+    landmark_detection:
+      _target_: src.datamodules.datapipes.extract.ExtractFeaturesFromVideos
+      extractor:
+        _target_: src.datamodules.datapipes.extract.ExtractVideoFeatures
+        model:
+          _target_: src.datamodules.datapipes.extract.landmarks.MediaPipeLandmarkExtractor
+          static_image_mode: False
+          max_num_faces: 1
+          refine_landmarks: True
+          min_detection_confidence: 0.45
+          min_tracking_confidence: 0.45
+        skip_existing: True
+      return_key: paths
+    
+    # Landmark Interpolation
+    landmark_interpolation:
+      _target_: src.datamodules.datapipes.extract.InterpolateDetectionsFromPaths
+      interpolator:
+        _target_: src.datamodules.datapipes.extract.landmarks.InterpolateLandmarks
+        max_interpolate: 3 # 0.1s worth of video
+        skip_existing: True
+      return_key: paths

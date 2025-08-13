@@ -1,0 +1,9 @@
+# Assign Fixed Stages
+
+construct:
+  operations:
+    split_index:
+      _target_: src.datamodules.datapipes.sample.samplers.AssignSplit
+      stages: ["test"]
+      exclude: ["train"]
+      return_key: samples

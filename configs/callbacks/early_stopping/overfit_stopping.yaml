@@ -1,0 +1,26 @@
+# Early Stopping
+
+# https://lightning.ai/docs/pytorch/stable/api/lightning.pytorch.callbacks.EarlyStopping.html#earlystopping
+
+# Monitor a metric and stop training once the condition is reach e.g. stopped improving
+# Custom resolver ...
+
+_target_: lightning.pytorch.callbacks.EarlyStopping
+
+# Monitor
+monitor: ${loss_name:valid}
+mode: min
+
+# Settings
+min_delta: 0.01
+patience: 10
+# stopping_threshold: # Stop if monitor reaches this value
+# divergence_threshold: # Stop if monitor falls below this value
+# check_on_train_epoch_end:
+
+# Configuration
+strict: True
+verbose: True
+check_finite: True # Stop training if val_loss if NaN or infinite
+log_rank_zero_only: True # Log on rank 0 process only
+check_on_train_epoch_end: False

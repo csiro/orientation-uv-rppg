@@ -1,0 +1,14 @@
+# DataLoaders
+defaults:
+  - loaders@train: multiprocess
+  - loaders@valid: multiprocess
+  - loaders@test: multiprocess
+  - loaders@predict: multiprocess
+
+test:
+  batch_size: 1 # write each loss individually to file
+  shuffle: False
+
+predict:
+  batch_size: 1
+  shuffle: False

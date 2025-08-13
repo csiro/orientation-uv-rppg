@@ -1,0 +1,18 @@
+# --- Limited Training Scheme ---
+# Intended for validation of additional features such as logging/checkpointing
+
+# Reproducibility
+deterministic: True
+
+# Allow logging/checkpointing with limited data (10%)
+max_epochs: 2
+limit_train_batches: 0.10
+limit_val_batches: 0.10
+limit_test_batches: 0.10
+limit_predict_batches: 0.10
+num_sanity_val_steps: 0
+
+# Display information
+enable_checkpointing: True
+enable_progress_bar: True
+enable_model_summary: True # (can also provide custom summary in callback)

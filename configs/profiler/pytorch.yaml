@@ -1,0 +1,14 @@
+defaults:
+  - default
+
+# Will generate a profile report per rank in DDP mode.
+_target_: lightning.pytorch.profilers.PyTorchProfiler
+filename: profiler.logs
+
+#
+group_by_input_shapes: True
+export_to_chrome: True
+
+# 
+row_limit: 100
+record_module_names: True

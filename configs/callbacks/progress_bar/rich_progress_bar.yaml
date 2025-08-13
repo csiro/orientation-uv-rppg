@@ -1,0 +1,14 @@
+# Progress Bar
+
+# 
+
+#
+
+_target_: lightning.pytorch.callbacks.RichProgressBar
+refresh_rate: 1
+leave: False
+theme:
+  _target_: lightning.pytorch.callbacks.progress.rich_progress.RichProgressBarTheme
+  progress_bar: "#00BFFF"
+  progress_bar_finished: "#00BFFF"
+  progress_bar_pulse: "#00BFFF"
