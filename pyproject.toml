@@ -1,0 +1,111 @@
+[build-system]
+requires = [
+    "setuptools==80.9.0", 
+    "wheel==0.45.1"
+]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "orientation-uv-rppg"
+version = "0.1.0"
+description = "Orientation-masked texture-space video processing for facial remote photoplethysmography."
+authors = [
+    {name = "Sam Cantrill", email = "sam.cantrill@data61.csiro.au"},
+    {name = "Sam Cantrill", email = "sam.cantrill@gmail.com"},
+]
+maintainers = [
+    {name = "Sam Cantrill", email = "sam.cantrill@data61.csiro.au"},
+    {name = "Sam Cantrill", email = "sam.cantrill@gmail.com"},
+]
+readme = "README.md"
+license = {file = "LICENSE.md"}
+requires-python = ">=3.10"
+keywords = ["remote-physiological-measurement", "remote-photoplethysmography", "rppg", "heart-rate", "video-processing", "image-processing", "computer-vision", "deep-learning"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
+    "Intended Audience :: Healthcare Industry",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3.10",
+    "Topic :: Scientific/Engineering",
+    "Topic :: Scientific/Engineering :: Medical Science Apps.",
+    "Topic :: Scientific/Engineering :: Image Processing",
+]
+
+# CORE DEPENDENCIES
+dependencies = [
+    "mediapipe>=0.10.21",
+    "torch>=2.8.0",
+]
+
+# OPTIONAL DEPENDENCIES
+[project.optional-dependencies]
+# Development tools
+dev = [
+    "pytest>=7",
+    "ruff>=0.5",
+    "mypy>=1.8",
+    "types-setuptools",
+]
+
+# Documentation tools
+docs = [
+  "mkdocs>=1.5",
+  "mkdocs-material>=9.5",
+]
+
+# Example notebooks and advanced features
+examples = [
+    "ipykernel==6.29.5",
+    "opencv-python==4.12.0.88",
+]
+
+# Full installation
+all = [
+    "orientation-uv-rppg[dev,docs,examples]"
+]
+
+[project.urls]
+Homepage = "https://github.com/csiro-internal/orientation-uv-rppg"
+Repository = "https://github.com/csiro-internal/orientation-uv-rppg.git"
+Documentation = "https://github.com/csiro-internal/orientation-uv-rppg/blob/package/README.md"
+"Bug Reports" = "https://github.com/csiro-internal/orientation-uv-rppg/issues"
+Changelog = "https://github.com/csiro-internal/orientation-uv-rppg/blob/package/CHANGELOG.md"
+
+# Optional: Command-line tools
+[project.scripts]
+# orientation-analyze = "orientation_uv_rppg.cli:main"
+
+# Package discovery
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-dir]
+"" = "src"
+
+# Include data files in package
+[tool.setuptools.package-data]
+orientation_uv_rppg = [
+    "examples/*.json",
+    "py.typed",
+]
+
+# Development tools configuration
+[tool.black]
+line-length = 88
+
+[tool.isort]
+profile = "black"
+line_length = 88
+multi_line_output = 3
+
+[tool.mypy]
+python_version = "3.10"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
