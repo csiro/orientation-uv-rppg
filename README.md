@@ -160,3 +160,6 @@ If you find this [paper](https://arxiv.org/abs/2404.09378) useful please cite ou
       url={https://openaccess.thecvf.com/content/CVPR2024W/CVPM/papers/Cantrill_Orientation-conditioned_Facial_Texture_Mapping_for_Video-based_Facial_Remote_Photoplethysmography_Estimation_CVPRW_2024_paper.pdf}, 
 }
 ```
+
+<h2>Acknowledgement</h2>
+This work was supported by the CSIRO MRFF Rapid Applied Research Translation grant (RARUR000158), CSIRO AI4M Minimising Antimicrobial Resistance Mission, and Australian Government Training Research Program (AGRTP) Scholarship.
