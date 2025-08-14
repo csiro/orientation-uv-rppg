@@ -147,8 +147,6 @@ Head into the <code>notebooks/analysis.ipynb</code> and read the data contained 
 
 <h2>:scroll: Citation</h2>
 
-## :scroll: Citation
-
 If you find this [paper](https://arxiv.org/abs/2404.09378) useful please cite our work.
 
 ```
