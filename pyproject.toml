@@ -76,6 +76,7 @@ Changelog = "https://github.com/csiro/orientation-uv-rppg/blob/package/CHANGELOG
 # Package discovery
 [tool.setuptools.packages.find]
 where = ["src"]
+include = ["orientation_uv_rppg"]
 
 [tool.setuptools.package-dir]
 "" = "src"
