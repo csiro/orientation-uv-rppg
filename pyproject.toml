@@ -67,15 +67,11 @@ all = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/csiro-internal/orientation-uv-rppg"
-Repository = "https://github.com/csiro-internal/orientation-uv-rppg.git"
-Documentation = "https://github.com/csiro-internal/orientation-uv-rppg/blob/package/README.md"
-"Bug Reports" = "https://github.com/csiro-internal/orientation-uv-rppg/issues"
-Changelog = "https://github.com/csiro-internal/orientation-uv-rppg/blob/package/CHANGELOG.md"
-
-# Optional: Command-line tools
-[project.scripts]
-# orientation-analyze = "orientation_uv_rppg.cli:main"
+Homepage = "https://github.com/csiro/orientation-uv-rppg"
+Repository = "https://github.com/csiro/orientation-uv-rppg.git"
+Documentation = "https://github.com/csiro/orientation-uv-rppg/blob/package/README.md"
+"Bug Reports" = "https://github.com/csiro/orientation-uv-rppg/issues"
+Changelog = "https://github.com/csiro/orientation-uv-rppg/blob/package/CHANGELOG.md"
 
 # Package discovery
 [tool.setuptools.packages.find]
@@ -87,7 +83,7 @@ where = ["src"]
 # Include data files in package
 [tool.setuptools.package-data]
 orientation_uv_rppg = [
-    "examples/*.json",
+    "examples/*.mp4",
     "py.typed",
 ]
 
