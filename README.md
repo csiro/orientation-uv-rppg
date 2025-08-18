@@ -52,7 +52,7 @@ Please see the <code>examples/</code> directory for usage examples and visualiza
 
 <h2>:scroll: Citation</h2>
 
-If you find this [paper](https://arxiv.org/abs/2404.09378) useful please cite our work.
+If you find this useful please cite our [work](https://arxiv.org/abs/2404.09378).
 
 ```
 @inproceedings{cantrill2024orientationconditionedfacialtexturemapping,
